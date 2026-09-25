@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tư tưởng đạo đức Hồ Chí Minh trên không gian số — Lớp 10.11</title>
+<meta property="og:title" content="Tư tưởng đạo đức Hồ Chí Minh trên không gian số">
+<meta property="og:description" content="Dự án truyền thông số của Lớp 10.11 — THPT Võ Minh Đức">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home" class="min-h-screen">
+
+<div id="auth-toast" class="hidden"></div>
+
+<!-- ============ HEADER / NAV ============ -->
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b" style="border-color:var(--color-border)">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+    <a href="index.html" class="flex items-center gap-2 shrink-0">
+      <div class="w-10 h-10 rounded-full brand-gradient flex items-center justify-center text-white font-bold">10.11</div>
+      <div>
+        <p class="font-extrabold leading-tight" data-editable="site-title" style="color:var(--color-primary)">Lớp 10.11 Số</p>
+        <p class="text-[11px] text-neutral-500 leading-tight" data-editable="site-slogan">Học tập và làm theo tư tưởng Hồ Chí Minh</p>
+      </div>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-neutral-700">
+      <a data-i18n data-i18n-vi="Trang chủ" href="index.html" style="color:var(--color-primary)">Trang chủ</a>
+      <a data-i18n data-i18n-vi="Xưởng Media" href="media.html" class="hover:opacity-70">Xưởng Media</a>
+      <a data-i18n data-i18n-vi="Tương tác" href="interactive.html" class="hover:opacity-70">Tương tác</a>
+      <a data-i18n data-i18n-vi="Thảo luận" href="forum.html" class="hover:opacity-70">Thảo luận</a>
+      <a data-i18n data-i18n-vi="Quản trị" href="admin.html" class="hover:opacity-70" data-require-role="SuperAdmin">Quản trị</a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <select onchange="AI.translateUI(this.value)" class="hidden sm:block text-xs border rounded-full px-2 py-1.5" style="border-color:var(--color-border)">
+        <option value="vi">🇻🇳 VI</option>
+        <option value="en">🇬🇧 EN</option>
+        <option value="fr">🇫🇷 FR</option>
+      </select>
+      <button id="btn-login" data-auth="guest" data-i18n data-i18n-vi="Đăng nhập bằng Google" class="btn-primary text-sm flex items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#fff" d="M44.5 20H24v8.5h11.8C34.7 33.9 30 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.3 0 6.3 1.2 8.6 3.2l6-6C34.9 4.5 29.8 2.5 24 2.5 11.8 2.5 2 12.3 2 24.5s9.8 22 22 22c11 0 21-8 21-22 0-1.5-.2-2.6-.5-4.5z"/></svg>
+        Đăng nhập
+      </button>
+      <div data-auth="user" class="hidden items-center gap-2">
+        <span class="text-sm font-semibold hidden sm:inline" data-user-name></span>
+        <button id="toggle-edit-mode" class="hidden btn-outline text-xs">✎ Chế độ sửa</button>
+        <button id="btn-logout" class="text-xs text-neutral-500 underline">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-3">
+    <input id="ai-search" type="search" placeholder="🔎 Tìm theo chủ đề: “sống xanh”, “tự học”, “cần kiệm”..."
+      class="w-full text-sm rounded-full border px-4 py-2" style="border-color:var(--color-border)">
+    <div id="search-results" class="mt-2 hidden card p-3 text-sm space-y-2"></div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="relative overflow-hidden">
+  <div class="brand-gradient text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20 grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <span class="tag-green" style="background:rgba(255,205,0,.2); color:#FFCD00">Dự án truyền thông số · Lớp 10.11 · THPT Võ Minh Đức</span>
+        <h1 class="mt-4 text-3xl md:text-5xl font-extrabold leading-tight" data-editable="hero-title">
+          Tư tưởng đạo đức Hồ Chí Minh trên không gian số
+        </h1>
+        <p class="mt-4 text-white/90 max-w-lg" data-editable="hero-desc">
+          Cùng khám phá cuộc đời, sự nghiệp và tấm gương đạo đức của Chủ tịch Hồ Chí Minh qua tư liệu số, video HD, podcast và những trải nghiệm tương tác dành cho thế hệ trẻ.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="interactive.html" class="btn-primary" style="background:#fff; color:var(--color-primary)">Bắt đầu Quiz</a>
+          <a href="#timeline" class="btn-outline" style="border-color:#fff; color:#fff">Xem dòng thời gian</a>
+        </div>
+        <p class="mt-6 text-sm text-white/80">👁 <span data-live-views>1.024</span> lượt xem toàn trang</p>
+      </div>
+      <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20" data-editable="hero-media">
+        <div class="aspect-video bg-black/30 flex items-center justify-center text-white/70 text-sm">
+          [Khung Video/Poster HD — thay bằng embed YouTube/Drive khi có tư liệu]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social Share -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3 text-sm">
+  <span class="text-neutral-500">Chia sẻ dự án:</span>
+  <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href))" class="tag-green" style="background:#1877F2; color:#fff">Facebook</button>
+  <button onclick="window.open('https://zalo.me/share?url='+encodeURIComponent(location.href))" class="tag-green" style="background:#0068FF; color:#fff">Zalo</button>
+</div>
+
+<!-- ============ TIMELINE ============ -->
+<section id="timeline" class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+  <h2 class="text-2xl md:text-3xl font-extrabold" data-editable="timeline-title">Dòng thời gian Lịch sử Tương tác</h2>
+  <p class="text-neutral-600 mt-1">Nhấp vào từng mốc để xem tư liệu gốc, video và audio HD.</p>
+
+  <div id="timeline-list" class="timeline-track pl-6 mt-8 space-y-8"></div>
+</section>
+
+<!-- Modal mốc lịch sử -->
+<div id="timeline-modal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+  <div class="card max-w-xl w-full p-6 relative">
+    <button onclick="document.getElementById('timeline-modal').classList.add('hidden')" class="absolute top-3 right-3 text-neutral-400 hover:text-black">✕</button>
+    <h3 id="modal-year" class="text-xl font-extrabold" style="color:var(--color-primary)"></h3>
+    <p id="modal-title" class="font-semibold mt-1"></p>
+    <p id="modal-desc" class="text-sm text-neutral-600 mt-2"></p>
+    <div class="mt-3 aspect-video bg-neutral-100 rounded-lg flex items-center justify-center text-xs text-neutral-400">[Video/Audio tư liệu HD]</div>
+  </div>
+</div>
+
+<!-- ============ AI CHATBOT ============ -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+  <div class="card p-5 md:p-6 grid md:grid-cols-[1fr_2fr] gap-6">
+    <div>
+      <h2 class="text-xl font-extrabold" data-editable="chatbot-title">🤖 Trợ lý AI Lịch sử</h2>
+      <p class="text-sm text-neutral-600 mt-2">Cố vấn Tư tưởng Số trả lời câu hỏi của bạn dựa trên kho tư liệu đã được Ban Kiểm duyệt xác thực.</p>
+      <p class="text-xs text-neutral-400 mt-3">Thử hỏi: "Bác ra đi tìm đường cứu nước năm nào?", "Cần kiệm liêm chính là gì?"</p>
+    </div>
+    <div>
+      <div id="chat-log" class="h-64 overflow-y-auto space-y-3 p-3 rounded-lg bg-neutral-50 border" style="border-color:var(--color-border)"></div>
+      <form id="chat-form" class="mt-3 flex gap-2">
+        <input id="chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." class="flex-1 border rounded-full px-4 py-2 text-sm" style="border-color:var(--color-border)">
+        <button class="btn-primary text-sm">Gửi</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WISHING WALL ============ -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+  <h2 class="text-2xl md:text-3xl font-extrabold" data-editable="wall-title">Bức tường "Cảm nghĩ &amp; Hành động"</h2>
+  <p class="text-neutral-600 mt-1">Viết lời hứa học tập theo tấm gương đạo đức Hồ Chí Minh.</p>
+
+  <div class="grid md:grid-cols-[1fr_1.2fr] gap-6 mt-6">
+    <form id="reflection-form" class="card p-5 space-y-3">
+      <input id="ref-name" required placeholder="Họ và tên" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+      <input id="ref-class" required placeholder="Lớp (VD: 10.11)" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+      <textarea id="ref-content" required rows="3" placeholder="Lời hứa / cảm nghĩ của bạn..." class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)"></textarea>
+      <div class="flex items-center justify-between">
+        <button type="button" onclick="fillSuggestion()" class="text-xs underline" style="color:var(--color-green)">✨ AI gợi ý câu hay</button>
+        <button class="btn-primary text-sm">Gửi cảm nghĩ</button>
+      </div>
+      <p id="ref-status" class="text-xs"></p>
+    </form>
+    <div id="wall-list" class="space-y-3 max-h-80 overflow-y-auto"></div>
+  </div>
+</section>
+
+<footer class="border-t mt-10 py-8 text-center text-sm text-neutral-500" style="border-color:var(--color-border)">
+  <p>© 2026 Lớp 10.11 · THPT Võ Minh Đức — Dự án truyền thông số "Tư tưởng đạo đức Hồ Chí Minh trên không gian số"</p>
+</footer>
+
+<!-- Edit toolbar -->
+<div id="edit-toolbar" class="hidden">
+  <div class="card p-3 flex items-center gap-3 shadow-2xl">
+    <span class="text-xs font-semibold">🎨 Theme:</span>
+    <input type="color" value="#C8102E" onchange="LiveEditor.setColor('--color-primary', this.value)" title="Màu chủ đạo">
+    <input type="color" value="#FFCD00" onchange="LiveEditor.setColor('--color-accent', this.value)" title="Màu nhấn">
+    <input type="color" value="#10B981" onchange="LiveEditor.setColor('--color-green', this.value)" title="Màu xanh">
+    <button id="save-edit-mode" class="btn-primary text-xs">💾 Lưu cấu hình</button>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const TIMELINE = [
+    { year: "1890", title: "Sinh tại Nghệ An", desc: "Chủ tịch Hồ Chí Minh sinh ngày 19/5/1890 tại làng Hoàng Trù, xã Kim Liên, huyện Nam Đàn, tỉnh Nghệ An." },
+    { year: "1911", title: "Ra đi tìm đường cứu nước", desc: "Ngày 5/6/1911, tại bến cảng Nhà Rồng, người thanh niên Nguyễn Tất Thành ra đi tìm đường cứu nước." },
+    { year: "1945", title: "Tuyên ngôn Độc lập", desc: "Ngày 2/9/1945 tại Quảng trường Ba Đình, khai sinh nước Việt Nam Dân chủ Cộng hòa." },
+    { year: "1954", title: "Chiến thắng Điện Biên Phủ", desc: "Chiến thắng lừng lẫy năm châu, chấn động địa cầu, kết thúc cuộc kháng chiến chống Pháp." },
+    { year: "1969", title: "Bác Hồ qua đời", desc: "Ngày 2/9/1969, Chủ tịch Hồ Chí Minh qua đời, để lại bản Di chúc thiêng liêng cho toàn dân tộc." },
+  ];
+
+  function renderTimeline() {
+    const el = document.getElementById("timeline-list");
+    el.innerHTML = TIMELINE.map((t, i) => `
+      <div class="relative pl-4 fade-in-once cursor-pointer group" style="animation-delay:${i * 80}ms" onclick='openTimelineModal(${i})'>
+        <div class="timeline-dot absolute -left-[31px] top-1.5"></div>
+        <p class="text-sm font-bold" style="color:var(--color-primary)">${t.year}</p>
+        <p class="font-semibold group-hover:underline">${t.title}</p>
+      </div>`).join("");
+  }
+  function openTimelineModal(i) {
+    const t = TIMELINE[i];
+    document.getElementById("modal-year").textContent = t.year;
+    document.getElementById("modal-title").textContent = t.title;
+    document.getElementById("modal-desc").textContent = t.desc;
+    document.getElementById("timeline-modal").classList.remove("hidden");
+  }
+  renderTimeline();
+
+  // AI Chatbot
+  document.getElementById("chat-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const input = document.getElementById("chat-input");
+    const q = input.value.trim();
+    if (!q) return;
+    appendChat("user", q);
+    input.value = "";
+    setTimeout(() => appendChat("bot", AI.chatbotReply(q)), 350);
+  });
+  function appendChat(role, text) {
+    const log = document.getElementById("chat-log");
+    const bubble = document.createElement("div");
+    bubble.className = role === "user"
+      ? "ml-auto max-w-[80%] text-sm text-white rounded-2xl rounded-br-sm px-3 py-2 w-fit"
+      : "mr-auto max-w-[80%] text-sm rounded-2xl rounded-bl-sm px-3 py-2 w-fit bg-white border";
+    if (role === "user") bubble.style.background = "var(--color-primary)";
+    else bubble.style.borderColor = "var(--color-border)";
+    bubble.textContent = text;
+    log.appendChild(bubble);
+    log.scrollTop = log.scrollHeight;
+  }
+  appendChat("bot", "Xin chào! Mình là Cố vấn Tư tưởng Số 🤖. Bạn muốn tìm hiểu điều gì về cuộc đời và tư tưởng đạo đức Hồ Chí Minh?");
+
+  // Semantic search
+  let ALL_POSTS = [];
+  SheetsAPI.fetchSheet("Posts").then(posts => ALL_POSTS = posts);
+  document.getElementById("ai-search").addEventListener("input", e => {
+    const box = document.getElementById("search-results");
+    const q = e.target.value.trim();
+    if (!q) { box.classList.add("hidden"); return; }
+    const results = AI.semanticSearch(q, ALL_POSTS);
+    box.classList.remove("hidden");
+    box.innerHTML = results.length
+      ? results.map(p => `<p class="hover:underline cursor-pointer" onclick="location.href='media.html'">📄 ${p.Title} <span class="tag-green ml-1">${p.Category || ""}</span></p>`).join("")
+      : `<p class="text-neutral-400">Không tìm thấy kết quả phù hợp với "${q}"</p>`;
+  });
+
+  // Wishing wall
+  function fillSuggestion() { document.getElementById("ref-content").value = AI.suggestReflection(); }
+
+  async function loadWall() {
+    const data = await SheetsAPI.fetchSheet("Reflections");
+    const approved = data.filter(r => (r.Status || "Approved").toLowerCase() === "approved");
+    document.getElementById("wall-list").innerHTML = approved.map(r => `
+      <div class="card p-4">
+        <p class="text-sm">${r.Content}</p>
+        <p class="text-xs text-neutral-400 mt-2">— ${r.StudentName}, Lớp ${r.Class}</p>
+      </div>`).join("") || `<p class="text-sm text-neutral-400">Chưa có cảm nghĩ nào được duyệt.</p>`;
+  }
+  loadWall();
+
+  document.getElementById("reflection-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const content = document.getElementById("ref-content").value;
+    const mod = AI.moderate(content);
+    const status = document.getElementById("ref-status");
+    if (!mod.clean) {
+      status.textContent = "⚠ Nội dung chứa từ ngữ chưa phù hợp, vui lòng chỉnh sửa trước khi gửi.";
+      status.style.color = "var(--color-primary)";
+      return;
+    }
+    await SheetsAPI.writeSheet("Reflections", {
+      StudentName: document.getElementById("ref-name").value,
+      Class: document.getElementById("ref-class").value,
+      Content: content, Status: "Pending", SubmittedAt: new Date().toISOString(),
+    });
+    status.textContent = "✓ Đã gửi! Cảm nghĩ của bạn đang chờ Ban 4 duyệt trước khi hiển thị công khai.";
+    status.style.color = "var(--color-green)";
+    e.target.reset();
+  });
+</script>
+</body>
+</html>

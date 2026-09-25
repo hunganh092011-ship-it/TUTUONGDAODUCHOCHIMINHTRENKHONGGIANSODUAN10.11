@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản trị Truyền thông &amp; User — Lớp 10.11</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="admin" class="min-h-screen">
+<div id="auth-toast" class="hidden"></div>
+
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b" style="border-color:var(--color-border)">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="w-10 h-10 rounded-full brand-gradient flex items-center justify-center text-white font-bold">10.11</div>
+      <p class="font-extrabold" style="color:var(--color-primary)">Lớp 10.11 Số</p>
+    </a>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-neutral-700">
+      <a href="index.html" class="hover:opacity-70">Trang chủ</a>
+      <a href="media.html" class="hover:opacity-70">Xưởng Media</a>
+      <a href="interactive.html" class="hover:opacity-70">Tương tác</a>
+      <a href="forum.html" class="hover:opacity-70">Thảo luận</a>
+      <a href="admin.html" style="color:var(--color-primary)">Quản trị</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <button id="btn-login" data-auth="guest" class="btn-primary text-sm">Đăng nhập</button>
+      <div data-auth="user" class="hidden items-center gap-2">
+        <span class="text-sm font-semibold hidden sm:inline" data-user-name></span>
+        <button id="btn-logout" class="text-xs text-neutral-500 underline">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Chặn nếu không phải quản trị -->
+<section id="denied-block" class="max-w-xl mx-auto px-4 py-24 text-center hidden">
+  <p class="text-5xl">⛔</p>
+  <h2 class="text-xl font-bold mt-4">Truy cập bị từ chối</h2>
+  <p class="text-neutral-500 mt-2">Trang Quản trị chỉ dành cho tài khoản có vai trò quản lý đã được Super Admin phê duyệt.</p>
+</section>
+
+<div id="admin-panel" class="hidden">
+<section class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+  <h1 class="text-3xl font-extrabold">Bảng Quản trị Truyền thông</h1>
+  <p class="text-neutral-600 mt-1">Quản lý tài khoản, nội dung, và kiểm duyệt hệ thống.</p>
+
+  <div class="flex gap-2 mt-6 border-b overflow-x-auto" style="border-color:var(--color-border)">
+    <button class="tab-btn px-4 py-2 text-sm font-semibold border-b-2" data-tab="users" style="border-color:var(--color-primary); color:var(--color-primary)" data-require-role="SuperAdmin">👤 Tài khoản</button>
+    <button class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-neutral-500" data-tab="analytics">📊 Tổng quan</button>
+    <button class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-neutral-500" data-tab="cms">📝 Đăng nội dung</button>
+    <button class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-neutral-500" data-tab="moderation">🛡 Kiểm duyệt</button>
+  </div>
+
+  <!-- TAB 1: USERS (Super Admin only) -->
+  <div id="tab-users" class="tab-panel mt-6" data-require-role="SuperAdmin">
+    <div class="grid lg:grid-cols-[1fr_1.6fr] gap-6">
+      <form id="user-form" class="card p-5 space-y-3 h-fit">
+        <h3 class="font-bold">➕ Tạo tài khoản mới</h3>
+        <p class="text-xs text-neutral-500">Chỉ Super Admin mới có quyền tạo &amp; phê duyệt tài khoản. Không có đăng ký công khai.</p>
+        <input id="u-name" required placeholder="Họ và tên" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <input id="u-email" required type="email" placeholder="Email Gmail chính thức" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <select id="u-group" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+          <option>Admin</option><option>Ban 1</option><option>Ban 2</option><option>Ban 3</option><option>Ban 4</option>
+        </select>
+        <select id="u-role" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+          <option>SuperAdmin</option><option>TruongBan</option><option>ThanhVien</option>
+        </select>
+        <select id="u-status" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+          <option>Approved</option><option>Disabled</option>
+        </select>
+        <button class="btn-primary w-full text-sm">Tạo tài khoản</button>
+      </form>
+
+      <div class="card p-5 overflow-x-auto">
+        <h3 class="font-bold mb-3">Danh sách Thành viên</h3>
+        <table class="w-full text-sm">
+          <thead><tr class="text-left text-neutral-400 border-b" style="border-color:var(--color-border)">
+            <th class="py-2">Họ tên</th><th>Email</th><th>Ban</th><th>Quyền</th><th>Trạng thái</th><th></th>
+          </tr></thead>
+          <tbody id="user-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ANALYTICS -->
+  <div id="tab-analytics" class="tab-panel mt-6 hidden">
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="card p-5"><p class="text-xs text-neutral-400">Tổng lượt xem</p><p id="an-views" class="text-3xl font-extrabold mt-1" style="color:var(--color-primary)">—</p></div>
+      <div class="card p-5"><p class="text-xs text-neutral-400">Lượt làm Quiz</p><p id="an-quiz" class="text-3xl font-extrabold mt-1" style="color:var(--color-green)">—</p></div>
+      <div class="card p-5"><p class="text-xs text-neutral-400">Cảm nghĩ gửi lên</p><p id="an-reflect" class="text-3xl font-extrabold mt-1" style="color:#FFCD00">—</p></div>
+    </div>
+    <div class="card p-5 mt-4">
+      <p class="text-sm font-semibold mb-3">Biểu đồ lượt xem theo mốc (mẫu)</p>
+      <div class="flex items-end gap-2 h-40" id="mini-chart"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: CMS -->
+  <div id="tab-cms" class="tab-panel mt-6 hidden">
+    <div class="grid lg:grid-cols-2 gap-6">
+      <form id="post-form" class="card p-5 space-y-3">
+        <h3 class="font-bold">📝 Đăng bài viết / Video / Podcast / Infographic</h3>
+        <input id="p-title" required placeholder="Tiêu đề" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <select id="p-cat" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+          <option>Góc Trẻ</option><option>Sống xanh</option><option>Video</option><option>Podcast</option><option>Infographic</option>
+        </select>
+        <textarea id="p-content" required rows="4" placeholder="Nội dung..." class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)"></textarea>
+        <input id="p-media" placeholder="URL Media HD (YouTube/Drive) — nếu có" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <button class="btn-primary w-full text-sm">Đăng bài</button>
+      </form>
+      <form id="quiz-form" class="card p-5 space-y-2">
+        <h3 class="font-bold">❓ Thêm câu hỏi Quiz</h3>
+        <input id="q-question" required placeholder="Câu hỏi" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <input id="q-a" required placeholder="Đáp án A" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <input id="q-b" required placeholder="Đáp án B" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <input id="q-c" placeholder="Đáp án C" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <input id="q-d" placeholder="Đáp án D" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <select id="q-correct" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+          <option>A</option><option>B</option><option>C</option><option>D</option>
+        </select>
+        <input id="q-explain" placeholder="Giải thích đáp án" class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+        <button class="btn-primary w-full text-sm">Thêm câu hỏi</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TAB 4: MODERATION -->
+  <div id="tab-moderation" class="tab-panel mt-6 hidden">
+    <h3 class="font-bold mb-3">🛡 Trung tâm Kiểm duyệt Cảm nghĩ</h3>
+    <div id="mod-list" class="space-y-3"></div>
+  </div>
+</section>
+</div>
+
+<footer class="border-t mt-10 py-8 text-center text-sm text-neutral-500" style="border-color:var(--color-border)">
+  <p>© 2026 Lớp 10.11 · THPT Võ Minh Đức</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const MGMT_ROLES = ["SuperAdmin", "TruongBan"];
+
+  function guardAccess() {
+    const u = Auth.currentUser();
+    const allowed = u && MGMT_ROLES.includes(u.Role);
+    document.getElementById("admin-panel").classList.toggle("hidden", !allowed);
+    document.getElementById("denied-block").classList.toggle("hidden", !!allowed || !u);
+    if (allowed) initAdmin();
+  }
+  document.addEventListener("DOMContentLoaded", () => setTimeout(guardAccess, 50));
+  const _origRender = Auth.renderAuthState.bind(Auth);
+  Auth.renderAuthState = function () { _origRender(); guardAccess(); };
+
+  // Tabs
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => { b.style.borderColor = "transparent"; b.style.color = "#737373"; });
+      btn.style.borderColor = "var(--color-primary)"; btn.style.color = "var(--color-primary)";
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+      document.getElementById("tab-" + btn.dataset.tab).classList.remove("hidden");
+    });
+  });
+
+  function initAdmin() {
+    loadUsers();
+    loadAnalytics();
+    loadModeration();
+  }
+
+  async function loadUsers() {
+    const users = await SheetsAPI.fetchSheet("Users", { forceRefresh: true });
+    document.getElementById("user-table").innerHTML = users.map((u, i) => `
+      <tr class="border-b" style="border-color:var(--color-border)">
+        <td class="py-2">${u.FullName || "—"}</td>
+        <td class="text-neutral-500">${u.Email}</td>
+        <td>${u.Group || "—"}</td>
+        <td>${u.Role}</td>
+        <td><span class="tag-green" style="${u.Status === "Disabled" ? "background:rgba(200,16,46,.12);color:var(--color-primary)" : ""}">${u.Status}</span></td>
+        <td>
+          <button onclick="toggleUserStatus(${i})" class="text-xs underline text-neutral-500">Bật/Tắt</button>
+          <button onclick="deleteUser(${i})" class="text-xs underline text-red-600 ml-2">Xóa</button>
+        </td>
+      </tr>`).join("");
+    window._users = users;
+  }
+  async function toggleUserStatus(i) {
+    const u = window._users[i];
+    u.Status = u.Status === "Approved" ? "Disabled" : "Approved";
+    await SheetsAPI.writeSheet("Users", u, "upsert");
+    loadUsers();
+  }
+  async function deleteUser(i) {
+    const u = window._users[i];
+    if (!confirm(`Xóa tài khoản ${u.Email}?`)) return;
+    await SheetsAPI.writeSheet("Users", { Email: u.Email }, "delete");
+    loadUsers();
+  }
+  document.getElementById("user-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const current = Auth.currentUser();
+    await SheetsAPI.writeSheet("Users", {
+      UserID: "U" + Date.now(), FullName: document.getElementById("u-name").value,
+      Email: document.getElementById("u-email").value, Group: document.getElementById("u-group").value,
+      Role: document.getElementById("u-role").value, Status: document.getElementById("u-status").value,
+      CreatedBy: current ? current.Email : "system", CreatedAt: new Date().toISOString(),
+    }, "append");
+    Auth.showAuthToast("Đã tạo tài khoản mới thành công.", "success");
+    e.target.reset();
+    loadUsers();
+  });
+
+  async function loadAnalytics() {
+    const data = await SheetsAPI.fetchSheet("Analytics");
+    const get = name => (data.find(d => d.MetricName === name) || {}).Value || 0;
+    document.getElementById("an-views").textContent = LiveCounter.get("global").toLocaleString("vi-VN");
+    document.getElementById("an-quiz").textContent = get("QuizAttempts");
+    document.getElementById("an-reflect").textContent = get("Reflections");
+    const bars = [40, 65, 50, 80, 60, 95, 70];
+    document.getElementById("mini-chart").innerHTML = bars.map(h => `<div style="height:${h}%; background:var(--color-primary)" class="flex-1 rounded-t-md"></div>`).join("");
+  }
+
+  document.getElementById("post-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const u = Auth.currentUser();
+    await SheetsAPI.writeSheet("Posts", {
+      PostID: "P" + Date.now(), Title: document.getElementById("p-title").value,
+      Category: document.getElementById("p-cat").value, Content: document.getElementById("p-content").value,
+      MediaURL: document.getElementById("p-media").value, Author: u ? u.Email : "admin",
+      Views: 0, CreatedAt: new Date().toISOString(), Status: "Published",
+    });
+    Auth.showAuthToast("Đã đăng bài viết mới.", "success");
+    e.target.reset();
+  });
+
+  document.getElementById("quiz-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    await SheetsAPI.writeSheet("Quiz", {
+      QuizID: "Q" + Date.now(), Question: document.getElementById("q-question").value,
+      OptionA: document.getElementById("q-a").value, OptionB: document.getElementById("q-b").value,
+      OptionC: document.getElementById("q-c").value, OptionD: document.getElementById("q-d").value,
+      CorrectAnswer: document.getElementById("q-correct").value, Explanation: document.getElementById("q-explain").value,
+    });
+    Auth.showAuthToast("Đã thêm câu hỏi Quiz mới.", "success");
+    e.target.reset();
+  });
+
+  async function loadModeration() {
+    const data = await SheetsAPI.fetchSheet("Reflections", { forceRefresh: true });
+    document.getElementById("mod-list").innerHTML = data.map((r, i) => {
+      const mod = AI.moderate(r.Content);
+      return `
+      <div class="card p-4 flex items-start justify-between gap-4">
+        <div>
+          <p class="text-sm">${r.Content}</p>
+          <p class="text-xs text-neutral-400 mt-1">— ${r.StudentName}, Lớp ${r.Class} · <span class="${mod.clean ? "text-green-600" : "text-red-600"}">${mod.clean ? "AI: Nội dung sạch" : "AI: Cảnh báo từ ngữ"}</span></p>
+        </div>
+        <div class="flex gap-2 shrink-0">
+          <button onclick="setReflectionStatus(${i}, 'Approved')" class="text-xs btn-outline">Duyệt</button>
+          <button onclick="setReflectionStatus(${i}, 'Rejected')" class="text-xs text-red-600 underline">Xóa</button>
+        </div>
+      </div>`;
+    }).join("") || `<p class="text-sm text-neutral-400">Không có cảm nghĩ nào đang chờ duyệt.</p>`;
+    window._reflections = data;
+  }
+  async function setReflectionStatus(i, status) {
+    const r = window._reflections[i];
+    r.Status = status;
+    await SheetsAPI.writeSheet("Reflections", r, "upsert");
+    loadModeration();
+  }
+</script>
+</body>
+</html>

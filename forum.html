@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thảo luận Nội bộ &amp; Task Tracker — Lớp 10.11</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="forum" class="min-h-screen">
+<div id="auth-toast" class="hidden"></div>
+
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b" style="border-color:var(--color-border)">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="w-10 h-10 rounded-full brand-gradient flex items-center justify-center text-white font-bold">10.11</div>
+      <p class="font-extrabold" style="color:var(--color-primary)">Lớp 10.11 Số</p>
+    </a>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-neutral-700">
+      <a href="index.html" class="hover:opacity-70">Trang chủ</a>
+      <a href="media.html" class="hover:opacity-70">Xưởng Media</a>
+      <a href="interactive.html" class="hover:opacity-70">Tương tác</a>
+      <a href="forum.html" style="color:var(--color-primary)">Thảo luận</a>
+      <a href="admin.html" class="hover:opacity-70" data-require-role="SuperAdmin">Quản trị</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <button id="btn-login" data-auth="guest" class="btn-primary text-sm">Đăng nhập</button>
+      <div data-auth="user" class="hidden items-center gap-2">
+        <span class="text-sm font-semibold hidden sm:inline" data-user-name></span>
+        <button id="btn-logout" class="text-xs text-neutral-500 underline">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Chặn truy cập nếu chưa đăng nhập -->
+<section id="guest-block" data-auth="guest" class="hidden max-w-xl mx-auto px-4 py-24 text-center">
+  <p class="text-5xl">🔒</p>
+  <h2 class="text-xl font-bold mt-4">Khu vực nội bộ Ban Dự án</h2>
+  <p class="text-neutral-500 mt-2">Trang Thảo luận &amp; Task Tracker chỉ dành cho tài khoản Gmail đã được Super Admin phê duyệt. Vui lòng đăng nhập để tiếp tục.</p>
+</section>
+
+<div data-auth="user" class="hidden">
+<section class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+  <h1 class="text-3xl font-extrabold">Không gian làm việc Ban Dự án</h1>
+  <p class="text-neutral-600 mt-1">Thảo luận nội bộ và theo dõi tiến độ công việc 4 Ban.</p>
+</section>
+
+<!-- Task Tracker -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+  <h2 class="text-xl font-extrabold mb-4">📋 Task Tracker Board</h2>
+  <div class="grid md:grid-cols-4 gap-4" id="task-board">
+    <!-- 4 cột Ban, JS render -->
+  </div>
+</section>
+
+<!-- Discussions -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+  <h2 class="text-xl font-extrabold mb-4">💬 Thảo luận Nội bộ</h2>
+  <form id="thread-form" class="card p-4 flex flex-col md:flex-row gap-3 mb-6">
+    <input id="thread-title" required placeholder="Tiêu đề chủ đề..." class="flex-1 border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+    <select id="thread-tag" class="border rounded-lg px-3 py-2 text-sm" style="border-color:var(--color-border)">
+      <option>Ban 1</option><option>Ban 2</option><option>Ban 3</option><option>Ban 4</option><option>Chung</option>
+    </select>
+    <button class="btn-primary text-sm">Tạo chủ đề</button>
+  </form>
+  <div id="thread-list" class="space-y-3"></div>
+</section>
+</div>
+
+<footer class="border-t mt-10 py-8 text-center text-sm text-neutral-500" style="border-color:var(--color-border)">
+  <p>© 2026 Lớp 10.11 · THPT Võ Minh Đức</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const GROUPS = [
+    { name: "Ban 1 — Sưu tầm tư liệu", key: "b1", color: "#C8102E" },
+    { name: "Ban 2 — Sản xuất Media", key: "b2", color: "#FFCD00" },
+    { name: "Ban 3 — Biên tập & Kịch bản", key: "b3", color: "#10B981" },
+    { name: "Ban 4 — Kiểm duyệt & Truyền thông", key: "b4", color: "#4B4B4B" },
+  ];
+  const DEFAULT_TASKS = {
+    b1: [{ t: "Sưu tầm ảnh tư liệu 1911-1945", s: "Đang làm" }, { t: "Phỏng vấn nhân chứng lịch sử", s: "Chưa bắt đầu" }],
+    b2: [{ t: "Dựng video Hero Banner HD", s: "Đang làm" }, { t: "Thiết kế Infographic timeline", s: "Đã xong" }],
+    b3: [{ t: "Viết bài Góc Trẻ tuần 1", s: "Đã xong" }, { t: "Soạn 10 câu hỏi Quiz", s: "Đang làm" }],
+    b4: [{ t: "Rà soát lỗi lịch sử bài viết", s: "Chưa bắt đầu" }, { t: "Kiểm duyệt cảm nghĩ tuần", s: "Đang làm" }],
+  };
+  function loadTasks() {
+    const saved = JSON.parse(localStorage.getItem("hcm10_11_tasks") || "null") || DEFAULT_TASKS;
+    document.getElementById("task-board").innerHTML = GROUPS.map(g => `
+      <div class="card p-4">
+        <p class="font-bold text-sm" style="color:${g.color}">${g.name}</p>
+        <div class="mt-3 space-y-2">
+          ${saved[g.key].map((task, i) => `
+            <div class="border rounded-lg p-2 text-xs" style="border-color:var(--color-border)">
+              <p class="font-medium">${task.t}</p>
+              <select onchange="updateTask('${g.key}', ${i}, this.value)" class="mt-1 text-[11px] border rounded px-1 py-0.5">
+                ${["Chưa bắt đầu","Đang làm","Đã xong"].map(s => `<option ${s===task.s?"selected":""}>${s}</option>`).join("")}
+              </select>
+            </div>`).join("")}
+        </div>
+      </div>`).join("");
+  }
+  function updateTask(key, i, status) {
+    const saved = JSON.parse(localStorage.getItem("hcm10_11_tasks") || "null") || DEFAULT_TASKS;
+    saved[key][i].s = status;
+    localStorage.setItem("hcm10_11_tasks", JSON.stringify(saved));
+    loadTasks();
+  }
+  loadTasks();
+
+  async function loadThreads() {
+    const data = await SheetsAPI.fetchSheet("Discussions");
+    document.getElementById("thread-list").innerHTML = data.length ? data.map(d => `
+      <div class="card p-4">
+        <div class="flex items-center justify-between">
+          <p class="font-semibold">${d.Title}</p>
+          <span class="tag-green">${d.GroupTag}</span>
+        </div>
+        <p class="text-xs text-neutral-400 mt-1">bởi ${d.AuthorEmail} · 👍 ${d.Likes || 0}</p>
+      </div>`).join("") : `<p class="text-sm text-neutral-400">Chưa có chủ đề thảo luận nào. Hãy tạo chủ đề đầu tiên!</p>`;
+  }
+  loadThreads();
+
+  document.getElementById("thread-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const u = Auth.currentUser();
+    await SheetsAPI.writeSheet("Discussions", {
+      Title: document.getElementById("thread-title").value,
+      GroupTag: document.getElementById("thread-tag").value,
+      AuthorEmail: u ? u.Email : "ẩn danh",
+      Likes: 0, CreatedAt: new Date().toISOString(),
+    });
+    e.target.reset();
+    loadThreads();
+  });
+</script>
+</body>
+</html>
